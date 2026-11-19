@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1C1C1E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lernplan">
+<title>Mein Lernplan</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23C2410C'/%3E%3Cpath d='M18 33l9 9 19-20' fill='none' stroke='white' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23C2410C'/%3E%3Cpath d='M18 33l9 9 19-20' fill='none' stroke='white' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F7F6F2; --ink:#1C1C1E; --muted:#5F5E59; --line:#E2E0DA;
+    --L-bg:#FFEDD5; --L-fg:#9A3412; --L-bd:#C2410C;
+    --H-bg:#DBEAFE; --H-fg:#1E40AF; --H-bd:#1E40AF;
+    --N-bg:#EDE9FE; --N-fg:#5B21B6; --N-bd:#6D28D9;
+    --V-bg:#CCFBF1; --V-fg:#115E59; --V-bd:#0F766E;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Nunito',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+  main{max-width:560px;margin:0 auto;padding:20px 16px calc(32px + env(safe-area-inset-bottom))}
+  .kicker{font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--L-bd)}
+  h1{margin:4px 0 0;font-size:32px;font-weight:900;line-height:1.05}
+  .week{margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+  .week-row{display:flex;justify-content:space-between;align-items:baseline;font-weight:800;font-size:14px}
+  .week-row span:last-child{color:var(--muted)}
+  .bar{height:10px;border-radius:99px;background:#ECEAE4;margin-top:8px;overflow:hidden}
+  .bar>div{height:100%;background:var(--V-bd);border-radius:99px;transition:width .3s}
+  nav{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:16px}
+  nav button{font:inherit;border:0;border-radius:12px;padding:8px 0 7px;background:#fff;border:1px solid var(--line);color:var(--ink);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px}
+  nav button .d{font-size:15px;font-weight:900}
+  nav button .dot{width:8px;height:8px;border-radius:99px;background:#D6D3CC}
+  nav button.part .dot{background:#F59E0B}
+  nav button.done .dot{background:var(--V-bd)}
+  nav button.today{border:2px solid var(--ink)}
+  nav button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .dayhead{margin-top:20px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+  .dayhead h2{margin:0;font-size:24px;font-weight:900}
+  .dayhead .for{font-size:14px;font-weight:800;color:var(--muted);margin-top:2px}
+  .mins{font-size:14px;font-weight:800;color:var(--muted);white-space:nowrap}
+  .note{margin-top:10px;font-size:14px;font-weight:800;color:var(--V-fg);background:var(--V-bg);border-radius:12px;padding:10px 12px}
+  ul{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+  .item{display:flex;align-items:center;gap:14px;width:100%;font:inherit;text-align:left;border:0;border-radius:14px;padding:12px 14px;min-height:64px;cursor:pointer;transition:opacity .2s, transform .1s}
+  .item:active{transform:scale(.98)}
+  .box{flex:none;width:30px;height:30px;border-radius:9px;border:3px solid;background:#fff;display:flex;align-items:center;justify-content:center}
+  .box svg{width:18px;height:18px;opacity:0}
+  .item[aria-checked="true"] .box svg{opacity:1}
+  .item[aria-checked="true"]{opacity:.55}
+  .item[aria-checked="true"] .name{text-decoration:line-through}
+  .txt{display:flex;flex-direction:column;flex:1;min-width:0}
+  .name{font-size:18px;font-weight:900;line-height:1.2}
+  .sub{font-size:14px;font-weight:700;color:#3F3E3A;line-height:1.3}
+  .vok{font-size:14px;font-weight:800;color:var(--V-fg)}
+  .min{font-size:16px;font-weight:900;white-space:nowrap}
+  .t-L{background:var(--L-bg)} .t-L .name,.t-L .min{color:var(--L-fg)} .t-L .box{border-color:var(--L-bd)} .t-L .box svg{stroke:var(--L-bd)}
+  .t-H{background:var(--H-bg)} .t-H .name,.t-H .min{color:var(--H-fg)} .t-H .box{border-color:var(--H-bd)} .t-H .box svg{stroke:var(--H-bd)}
+  .t-N{background:var(--N-bg)} .t-N .name,.t-N .min{color:var(--N-fg)} .t-N .box{border-color:var(--N-bd)} .t-N .box svg{stroke:var(--N-bd)}
+  .t-V{background:var(--V-bg)} .t-V .name,.t-V .min{color:var(--V-fg)} .t-V .box{border-color:var(--V-bd)} .t-V .box svg{stroke:var(--V-bd)}
+  .free{margin-top:12px;border:2px dashed #C9C6BE;border-radius:14px;padding:22px;text-align:center;font-weight:800;color:var(--muted)}
+  .yay{margin-top:12px;background:var(--ink);color:#fff;border-radius:14px;padding:16px;text-align:center;font-size:18px;font-weight:900}
+  .tips{margin-top:24px;display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.4}
+  .tips div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .reset{margin-top:20px;width:100%;font:inherit;font-size:15px;font-weight:800;color:var(--muted);background:transparent;border:1px solid #C9C6BE;border-radius:12px;min-height:48px;cursor:pointer}
+  .reset.armed{color:#fff;background:#B91C1C;border-color:#B91C1C}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <div class="kicker">Klasse 7c · Wochenplan</div>
+  <h1>Mein Lernplan</h1>
+
+  <section class="week" aria-label="Fortschritt der Woche">
+    <div class="week-row"><span>Diese Woche</span><span id="weekTxt"></span></div>
+    <div class="bar"><div id="weekBar" style="width:0%"></div></div>
+  </section>
+
+  <nav id="days" aria-label="Wochentag wählen"></nav>
+
+  <div class="dayhead">
+    <div>
+      <h2 id="dayName"></h2>
+      <div class="for" id="dayFor"></div>
+    </div>
+    <div class="mins" id="dayMins"></div>
+  </div>
+  <div class="note" id="dayNote" hidden></div>
+  <ul id="list"></ul>
+  <div class="free" id="free" hidden>Heute ist frei</div>
+  <div class="yay" id="yay" hidden>Alles geschafft – stark!</div>
+
+  <div class="tips">
+    <div><b>Immer für morgen:</b> Gelernt wird, was am nächsten Schultag dran ist.</div>
+    <div><b>Probe steht an?</b> Mehr Minuten für dieses Fach, die anderen kürzen.</div>
+    <div><b>Hausaufgaben</b> kommen extra dazu und zählen nicht zur Lernzeit.</div>
+  </div>
+
+  <button class="reset" id="reset" type="button">Haken dieser Woche löschen</button>
+</main>
+
+<script>
+(function(){
+  // Typen: L = Latein, H = Hauptfach, N = Lernfach, V = nur Vokabeln
+  var DAYS = [
+    {s:'Mo', n:'Montag', f:'Dienstag', items:[
+      ['Mathe','H',20,0], ['Deutsch','H',15,0], ['Englisch','H',15,10], ['Musik','N',10,0], ['Vokabeln Latein','V',0,20] ]},
+    {s:'Di', n:'Dienstag', f:'Mittwoch', items:[
+      ['Latein','L',15,20], ['Mathe','H',10,0], ['Deutsch','H',10,0], ['Englisch','H',10,10], ['Geografie','N',10,0], ['Musik','N',5,0] ]},
+    {s:'Mi', n:'Mittwoch', f:'Donnerstag', items:[
+      ['Latein','L',20,20], ['NuT','N',15,0], ['Englisch','H',15,10], ['Mathe','H',10,0] ]},
+    {s:'Do', n:'Donnerstag', f:'Freitag', items:[
+      ['Latein','L',30,20], ['Deutsch','H',15,0], ['Geschichte','N',15,0], ['Vokabeln Englisch','V',0,10] ]},
+    {s:'Fr', n:'Freitag', f:'Montag', items:[
+      ['Reli/Ethik','N',20,0], ['Geschichte','N',20,0], ['Geografie','N',20,0], ['Vokabeln Latein','V',0,20], ['Vokabeln Englisch','V',0,10] ]},
+    {s:'Sa', n:'Samstag', f:null, note:'Wochen-Check: alle Vokabeln der Woche', items:[
+      ['Vokabeln Latein','V',0,40], ['Vokabeln Englisch','V',0,20] ]},
+    {s:'So', n:'Sonntag', f:null, note:'Problem-Wörter: nur was noch nicht sitzt', items:[
+      ['Vokabeln Latein','V',0,40], ['Vokabeln Englisch','V',0,20] ]}
+  ];
+
+  function isoWeekKey(d){
+    var t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    var day = t.getUTCDay() || 7;
+    t.setUTCDate(t.getUTCDate() + 4 - day);
+    var y = new Date(Date.UTC(t.getUTCFullYear(),0,1));
+    var w = Math.ceil(((t - y) / 86400000 + 1) / 7);
+    return t.getUTCFullYear() + '-W' + (w < 10 ? '0' : '') + w;
+  }
+
+  var now = new Date();
+  var KEY = 'lernplan-7c-' + isoWeekKey(now);
+  var todayIdx = (now.getDay() + 6) % 7;
+  var sel = todayIdx;
+  var done = {};
+
+  try { done = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e){ done = {}; }
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(done)); } catch(e){} }
+
+  // alte Wochen aufräumen
+  try {
+    for (var i = localStorage.length - 1; i >= 0; i--) {
+      var k = localStorage.key(i);
+      if (k && k.indexOf('lernplan-7c-') === 0 && k !== KEY) localStorage.removeItem(k);
+    }
+  } catch(e){}
+
+  var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>';
+  function id(di, ii){ return di + '-' + ii; }
+  function dayStats(di){
+    var it = DAYS[di].items, c = 0;
+    for (var i = 0; i < it.length; i++) if (done[id(di,i)]) c++;
+    return {c:c, t:it.length};
+  }
+
+  var nav = document.getElementById('days');
+  function renderNav(){
+    nav.innerHTML = '';
+    DAYS.forEach(function(d, di){
+      var st = dayStats(di);
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-pressed', di === sel ? 'true' : 'false');
+      b.setAttribute('aria-label', d.n + (st.c === st.t ? ', erledigt' : ', ' + st.c + ' von ' + st.t + ' erledigt'));
+      b.className = (di === todayIdx ? 'today ' : '') + (st.c === st.t ? 'done' : (st.c > 0 ? 'part' : ''));
+      b.innerHTML = '<span class="d">' + d.s + '</span><span class="dot"></span>';
+      b.onclick = function(){ sel = di; render(); };
+      nav.appendChild(b);
+    });
+  }
+
+  function renderDay(){
+    var d = DAYS[sel];
+    document.getElementById('dayName').textContent = d.n + (sel === todayIdx ? ' · heute' : '');
+    document.getElementById('dayFor').textContent = d.f ? 'Lernen für ' + d.f : 'Schulfrei – nur Vokabeln';
+    var total = 0; d.items.forEach(function(x){ total += x[2] + x[3]; });
+    document.getElementById('dayMins').textContent = total + ' Minuten';
+    var note = document.getElementById('dayNote');
+    note.hidden = !d.note; note.textContent = d.note || '';
+
+    var ul = document.getElementById('list');
+    ul.innerHTML = '';
+    d.items.forEach(function(x, ii){
+      var name = x[0], t = x[1], m = x[2], v = x[3];
+      var li = document.createElement('li');
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'item t-' + t;
+      b.setAttribute('role', 'checkbox');
+      var on = !!done[id(sel,ii)];
+      b.setAttribute('aria-checked', on ? 'true' : 'false');
+      var sub = '';
+      if (t === 'V') sub = '<span class="sub">Karteikarten / Vokabelheft</span>';
+      else if (v) sub = '<span class="vok">davon ' + v + ' min Vokabeln</span>';
+      b.innerHTML = '<span class="box">' + CHECK + '</span>' +
+        '<span class="txt"><span class="name">' + name + '</span>' + sub + '</span>' +
+        '<span class="min">' + (m + v) + ' min</span>';
+      b.onclick = function(){
+        if (done[id(sel,ii)]) delete done[id(sel,ii)]; else done[id(sel,ii)] = 1;
+        save(); render();
+      };
+      li.appendChild(b);
+      ul.appendChild(li);
+    });
+    var st = dayStats(sel);
+    document.getElementById('free').hidden = d.items.length > 0;
+    document.getElementById('yay').hidden = !(st.t > 0 && st.c === st.t);
+  }
+
+  function renderWeek(){
+    var c = 0, t = 0;
+    DAYS.forEach(function(_, di){ var s = dayStats(di); c += s.c; t += s.t; });
+    document.getElementById('weekTxt').textContent = c + ' von ' + t + ' erledigt';
+    document.getElementById('weekBar').style.width = Math.round(c / t * 100) + '%';
+  }
+
+  function render(){ renderNav(); renderDay(); renderWeek(); }
+
+  var reset = document.getElementById('reset'), armTimer = null;
+  reset.onclick = function(){
+    if (!reset.classList.contains('armed')) {
+      reset.classList.add('armed');
+      reset.textContent = 'Wirklich löschen? Nochmal tippen';
+      armTimer = setTimeout(function(){ reset.classList.remove('armed'); reset.textContent = 'Haken dieser Woche löschen'; }, 4000);
+      return;
+    }
+    clearTimeout(armTimer);
+    done = {}; save();
+    reset.classList.remove('armed'); reset.textContent = 'Haken dieser Woche löschen';
+    render();
+  };
+
+  // Beim Wiederöffnen nach Mitternacht / neuer Woche aktualisieren
+  document.addEventListener('visibilitychange', function(){
+    if (document.visibilityState === 'visible' && isoWeekKey(new Date()) + '' !== KEY.replace('lernplan-7c-','')) location.reload();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
